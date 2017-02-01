@@ -393,8 +393,8 @@ void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls) {
         //print Forms and Lemmas
         string f1lemma = "w1Lemma="+util::wstring2string(fword->get_lemma());
         string f2lemma = "w2lemma="+util::wstring2string(sword->get_lemma());
-        string f1form = "w1Lemma="+util::wstring2string(fword->get_form());
-        string f2form = "w2lemma="+util::wstring2string(sword->get_form());
+        string f1form = "w1form="+util::wstring2string(fword->get_form());
+        string f2form = "w2form="+util::wstring2string(sword->get_form());
         printFeat(f1form); printFeat(f2form); printFeat(f1lemma); printFeat(f2lemma);
 
         printFeatsSet(repetableFeats);
