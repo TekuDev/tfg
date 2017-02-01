@@ -535,7 +535,7 @@ int descard = 0;
         }
     }
     out[0] << endl;
-    cout << "deacard: " << descard << endl;
+    cout << "discard: " << descard << endl;
 
 }
 
