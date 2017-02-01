@@ -1,0 +1,1 @@
+../inputs/TE3-Silver-data/AFP_ENG_19970409.0021.tml ../inputs/te3-platinum/bbc_20130322_1150.tml ../inputs/te3-platinum/CNN_20130322_248.tml ../inputs/te3-platinum/bbc_20130322_332.tml

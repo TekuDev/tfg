@@ -1,0 +1,5 @@
+make
+./prueba features dicctionary diccOfClasses ALL < ../inputs/train.txt
+python3 script.py 0 features dicctionary diccOfClasses featuresCoded
+../libsvm-3.21/svm-train ../inputs/featuresCoded/featuresCoded.txt ../outputs/models/default.model
+../libsvm-3.21/svm-predict ../inputs/featuresCodedTest.txt ../outputs/models/default.model ../outputs/predictions/default_predict.txt > ../outputs/accuracy/default_out.txt
