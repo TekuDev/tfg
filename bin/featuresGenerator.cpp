@@ -169,6 +169,7 @@ void extractXML(pugi::xml_node &xml, wstring &text, int &i) {
 }
 
 void addFreelingInfoToEvents(list<sentence> &ls) {
+	int notfound = 0;
     for(auto &ei : events) {
         int sen = 0;
         bool found = false;
@@ -191,7 +192,12 @@ void addFreelingInfoToEvents(list<sentence> &ls) {
             ++s;
             ++sen;
         }
+        if (found == false) {
+        	++notfound;
+        	
+        }
     }
+    cout << "not found: " << notfound << endl;
     //printEvents(ls);
 }
 
@@ -411,7 +417,7 @@ void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls) {
 }
 
 void generateFeatures(pugi::xml_document &doc, wstring txt, tokenizer &tk, splitter &sp, maco &morfo, hmm_tagger &tagger, splitter::session_id &sid, senses &sen, ukb &wsd, dep_treeler &parser) {
-
+int descard = 0;
 	pugi::xml_node links = doc.child("TimeML");
 	pugi::xml_node text = links.child("TEXT");
     pugi::xml_node date = links.child("DCT");
@@ -440,7 +446,6 @@ void generateFeatures(pugi::xml_document &doc, wstring txt, tokenizer &tk, split
     	else if(clas == "BEGUN_BY") clas = "INCLUDES";
     	else if(clas == "IAFTER") clas = "AFTER";
     	else if(clas == "IBEFORE") clas = "BEFORE";
-        printClass(clas);
 
     	string event = node.attribute("eventInstanceID").value();
     	string rt = node.attribute("relatedToTime").value();
@@ -490,13 +495,17 @@ void generateFeatures(pugi::xml_document &doc, wstring txt, tokenizer &tk, split
         et = findEventInEvents(ei);
     	ed = findEventInEvents(ej);
     	
-    	//Features from Freeling:
-        if(lexicalfeats and et.sen != -1 and et.pos != -1 and ed.sen != -1 and ed.pos != -1) {
-            generateLexicalFeats(et,ed,ls);
-        }
-        if(syntactfeats and et.sen != -1 and et.pos != -1 and ed.sen != -1 and ed.pos != -1) {
-            generateSyntacticalFeats(et, ed, ls);
-        }
+    	if(et.sen != -1 and et.pos != -1 and ed.sen != -1 and ed.pos != -1) {
+    		printClass(clas);
+	    	//Features from Freeling:
+	        if(lexicalfeats) {
+	            generateLexicalFeats(et,ed,ls);
+	        }
+	        if(syntactfeats) {
+	            generateSyntacticalFeats(et, ed, ls);
+	        }
+    	}
+        else ++descard;
         out[0] << endl;
     }
 
@@ -506,73 +515,34 @@ void generateFeatures(pugi::xml_document &doc, wstring txt, tokenizer &tk, split
             string event = ei.id;
             string related = ej.id;
             
-            if (event != related and not findConexion(event,related)) {
-                string posw1, posw2, tensew1, tensew2, f1;
+            if (ei.sen != -1 and ei.pos != -1 and ej.sen != -1 and ej.pos != -1) {
+            	if (event != related and not findConexion(event,related)) {
+                
+	                printClass("NONE");
 
-                f1 = "NONE";
-                printClass(f1);
+	                //Features from Freeling:
+	                if(lexicalfeats) {
+	                    generateLexicalFeats(ei,ej,ls);
+	                }
+	                if(syntactfeats) {
+	                    generateSyntacticalFeats(ei, ej, ls);
+	                }
 
-                if(ei.type == L"TIMEX3") {
-                    pugi::xml_node t1;
-                    if(event =="t0") t1 = date.find_child_by_attribute("TIMEX3", "tid", event.c_str());
-                    else t1 = text.find_child_by_attribute("TIMEX3", "tid", event.c_str());
-                    posw1 = t1.attribute("type").value();
-                    event = t1.child_value();
-                    string f,f2;
-                    f = "w1="+event; f2 = "posw1="+posw1;
-                    printFeat(f); printFeat(f2);
-                }
-                else {
-                    pugi::xml_node e1 = links.find_child_by_attribute("MAKEINSTANCE", "eventID", event.c_str());
-                    posw1 = e1.attribute("pos").value();
-                    tensew1 = e1.attribute("tense").value();
-                    pugi::xml_node t2 = text.find_child_by_attribute("EVENT", "eid", event.c_str());
-                    event = t2.child_value();
-                    string f,f2,f3;
-                    f = "w1="+event; f2 = "posw1="+posw1; f3 = "tensew1="+tensew1;
-                    printFeat(f); printFeat(f2); printFeat(f3);
-                }
-
-                if(ej.type == L"TIMEX3") {
-                    pugi::xml_node t;
-                    if(related =="t0") t = date.find_child_by_attribute("TIMEX3", "tid", related.c_str());
-                    else t = text.find_child_by_attribute("TIMEX3", "tid", related.c_str());
-                    posw2 = t.attribute("type").value();
-                    related = t.child_value();
-                    string f,f2;
-                    f = "w2="+related; f2 = "posw2="+posw2;
-                    printFeat(f); printFeat(f2);
-                }
-                else {
-                    pugi::xml_node e2 = links.find_child_by_attribute("MAKEINSTANCE", "eventID", related.c_str());
-                    posw2 = e2.attribute("pos").value();
-                    tensew2 = e2.attribute("tense").value();
-                    pugi::xml_node t3 = text.find_child_by_attribute("EVENT", "eid", related.c_str());
-                    related = t3.child_value();
-                    string f,f2,f3;
-                    f = "w2="+related; f2 = "posw2="+posw2; f3 = "tensew2="+tensew2;
-                    printFeat(f); printFeat(f2); printFeat(f3);
-                }
-
-                //Features from Freeling:
-                if(lexicalfeats) {
-                    generateLexicalFeats(ei,ej,ls);
-                }
-                if(syntactfeats) {
-                    generateSyntacticalFeats(ei, ej, ls);
-                }
-
-                out[0] << endl;
+	                out[0] << endl;
+            	}
             }
+            else ++descard;
         }
     }
     out[0] << endl;
+    cout << "deacard: " << descard << endl;
 
 }
 
 int main(int nArgs, char* args[]) {
     if(nArgs != 4 and nArgs != 5) {cout << "Debes introducir el nombre del fichero [Features], el tipo de features generados [ALL, OL(only lexical), OS (Only Syntactical)] y el nombre del diccionario y diccionario de clases o default para no generarlo" << endl; exit(0);}
-    if(nArgs == 4 and args[3] != "default") {cout << "Debes introducir el valor 'default' para no generar diccionarios" << endl; exit(0);}
+    string arg3=args[3];
+    if(nArgs == 4 and arg3 != "default") {cout << "Debes introducir el valor 'default' para no generar diccionarios" << endl; exit(0);}
     
     string featuresName, featTypes;
     featuresName = args[1]; featTypes = args[2];
@@ -585,7 +555,7 @@ int main(int nArgs, char* args[]) {
     out[0].open("../inputs/features/"+featuresName+".txt");
     createDiccs = false;
 
-    if(args[3] != "default") {
+    if(arg3 != "default") {
     	createDiccs = true;
     	string diccName, diccOfClassName; diccName=args[3]; diccOfClassName=args[4];
 		out[1].open("../inputs/dicctionaries/"+diccName+".txt");
