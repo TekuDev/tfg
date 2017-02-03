@@ -1,8 +1,8 @@
 import string
 
-files = open("../inputs/featuresCoded/fcTrain.txt",'r')
-files2 = open("../inputs/featuresCoded/fcDevelopment.txt",'w')
-files3 = open("../inputs/featuresCoded/fcParaOptimizar.txt",'w')
+files = open("../inputs/featuresCoded/fcTrain10000.txt",'r')
+files2 = open("../inputs/featuresCoded/fcDevelopment10000.txt",'w')
+files3 = open("../inputs/featuresCoded/fcParaOptimizar10000.txt",'w')
 
 file = files.readline()
 i = 0

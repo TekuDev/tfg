@@ -3,3 +3,21 @@ make
 python3 script.py 0 features dicctionary diccOfClasses featuresCoded
 ../libsvm-3.21/svm-train ../inputs/featuresCoded/featuresCoded.txt ../outputs/models/default.model
 ../libsvm-3.21/svm-predict ../inputs/featuresCodedTest.txt ../outputs/models/default.model ../outputs/predictions/default_predict.txt > ../outputs/accuracy/default_out.txt
+
+
+------------------------------------
+Contar cuantos casos hay de cada clase:
+
+	cut -d' ' -f1  fcTrain.txt | sort | uniq -c
+
+-----------------------------------
+5198409 0
+  35325 1
+  45589 2
+   5067 3
+  16020 4
+  10891 5
+----------------------------------
+6036560   <- una prueba
+6036563   <- 40 pruebas
+
