@@ -319,6 +319,10 @@ void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls) {
     int nVerb = 0;
     int ssen,spos,fsen,fpos;
 
+    //out[0] << "word1:"<<ei.id<<endl;;
+    //out[0] << "word2:"<<ej.id<<endl;
+
+
     const freeling::word *fword, *sword;
 
     if(ei.start_offs < ej.start_offs) {
@@ -330,6 +334,10 @@ void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls) {
         sword = ei.w; ssen = ei.sen; spos = ei.pos;
     }
 
+    //out[0] << "pos1:"<<fpos<<endl;
+    //out[0] << "pos2:"<<spos<<endl;
+    //out[0] << "sen1:"<<fsen<<endl;
+    //out[0] << "sen2:"<<ssen<<endl;
 
     //first word
     std::list<sentence>::iterator sen = ls.begin();
@@ -347,18 +355,21 @@ void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls) {
         string f1after = "w1After="+util::wstring2string(w->get_form());
         printFeat(f1after);
     }
-    --w;
+    //--w;
     bool fin = false;
     int senAct = fsen; int wordAct = fpos;
+
     //second word
     while(not fin and sen != ls.end()) {
         while(not fin and w != sen->end()) {
+        	//out[0] << "posACT:"<<wordAct<<endl;
+    		//out[0] << "senACT:"<<senAct<<endl;
+        	
+        	//out[0] << util::wstring2string(w->get_form())<<endl;
             string form = "wordInMiddle="+util::wstring2string(w->get_form());
             string lemma = "WIMLemma="+util::wstring2string(w->get_lemma());
             repetableFeats.insert(form);
             repetableFeats.insert(lemma);
-
-            ++nWord;
             
             string tag = util::wstring2string(w->get_tag());
             if(tag[0]=='V') ++nVerb;
@@ -379,6 +390,10 @@ void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls) {
                 }
                 --w;
             }
+            //out[0] << "nWord:"<<nWord<<endl;
+    		//out[0] << "word:"<<util::wstring2string(w->get_form())<<endl;
+
+            ++nWord;
             ++w;
             ++wordAct;
         }
@@ -386,34 +401,35 @@ void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls) {
         ++sen;
         ++nSen;
         w = sen->begin();
-        }
-        //sen->get_words().size();
+        wordAct=0;
+    }
+    //sen->get_words().size();
 
 
-        //print Forms and Lemmas
-        string f1lemma = "w1Lemma="+util::wstring2string(fword->get_lemma());
-        string f2lemma = "w2lemma="+util::wstring2string(sword->get_lemma());
-        string f1form = "w1form="+util::wstring2string(fword->get_form());
-        string f2form = "w2form="+util::wstring2string(sword->get_form());
-        printFeat(f1form); printFeat(f2form); printFeat(f1lemma); printFeat(f2lemma);
+    //print Forms and Lemmas
+    string f1lemma = "w1Lemma="+util::wstring2string(fword->get_lemma());
+    string f2lemma = "w2lemma="+util::wstring2string(sword->get_lemma());
+    string f1form = "w1form="+util::wstring2string(fword->get_form());
+    string f2form = "w2form="+util::wstring2string(sword->get_form());
+    printFeat(f1form); printFeat(f2form); printFeat(f1lemma); printFeat(f2lemma);
 
-        printFeatsSet(repetableFeats);
+    printFeatsSet(repetableFeats);
 
-        //If some word is a DATE, print extra information
-        if (util::wstring2string(fword->get_tag()) == "W") {
-            string dateInfo = util::wstring2string(fword->get_lemma());
-            printDateInfo(dateInfo, "w1");
-        }
-        if (util::wstring2string(sword->get_tag()) == "W") {
-            string dateInfo = util::wstring2string(sword->get_lemma());
-            printDateInfo(dateInfo, "w2");
-        }
+    //If some word is a DATE, print extra information
+    if (util::wstring2string(fword->get_tag()) == "W") {
+        string dateInfo = util::wstring2string(fword->get_lemma());
+        printDateInfo(dateInfo, "w1");
+    }
+    if (util::wstring2string(sword->get_tag()) == "W") {
+        string dateInfo = util::wstring2string(sword->get_lemma());
+        printDateInfo(dateInfo, "w2");
+    }
 
-        //Print the distances
-        string f8 = "nWord="+to_string(nWord);
-        string f9 = "nVerb="+to_string(nVerb);
-        string f10 = "nSen="+to_string(nSen);
-        printFeat(f8); printFeat(f9); printFeat(f10);
+    //Print the distances
+    string f8 = "nWord="+to_string(nWord);
+    string f9 = "nVerb="+to_string(nVerb);
+    string f10 = "nSen="+to_string(nSen);
+    printFeat(f8); printFeat(f9); printFeat(f10);
 }
 
 void generateFeatures(pugi::xml_document &doc, wstring txt, tokenizer &tk, splitter &sp, maco &morfo, hmm_tagger &tagger, splitter::session_id &sid, senses &sen, ukb &wsd, dep_treeler &parser) {
@@ -508,6 +524,7 @@ int descard = 0;
         else ++descard;
         out[0] << endl;
     }
+    //printConexions();
 
     //Create the 'none' features:
     for (auto ei : events) {
@@ -516,8 +533,11 @@ int descard = 0;
             string related = ej.id;
             
             if (ei.sen != -1 and ei.pos != -1 and ej.sen != -1 and ej.pos != -1) {
-            	if (event != related and not findConexion(event,related)) {
-                
+            	if (event != related and not findConexion(event,related)
+            		and ei.id[0] != 't' 
+            		and (((ei.sen - ej.sen) == 1 or (ei.sen - ej.sen) == 0)
+            		    or ej.id == "t0")){
+
 	                printClass("NONE");
 
 	                //Features from Freeling:
@@ -536,7 +556,6 @@ int descard = 0;
     }
     out[0] << endl;
     cout << "discard: " << descard << endl;
-
 }
 
 int main(int nArgs, char* args[]) {
@@ -611,6 +630,7 @@ int main(int nArgs, char* args[]) {
             cout << "Generando features" << endl;
     		generateFeatures(doc, text, tk, sp, morfo, tagger, sid, sen, wsd, parser);
             cout << "Features generados" << endl;
+            cout << "Number of events = " << events.size() << endl;
     	}
     	else out[0] << "Error parsing the input file" << endl;
 
