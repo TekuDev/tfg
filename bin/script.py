@@ -19,10 +19,10 @@ diccOfClassesName = sys.argv[4]
 featuresCodedName = sys.argv[5]
 
 #open the files to work
-dicctionary = open("../inputs/dicctionaries/"+dicctionaryName+".txt",'r')
-diccOfClasses = open("../inputs/diccOfClasses/"+diccOfClassesName+".txt",'r')
-features = open("../inputs/features/"+featuresName+".txt",'r')
-result = open("../inputs/featuresCoded/"+featuresCodedName+".txt",'w')
+dicctionary = open("tfg/bin/inputs/dicctionaries/"+dicctionaryName+".txt",'r')
+diccOfClasses = open("tfg/bin/inputs/diccOfClasses/"+diccOfClassesName+".txt",'r')
+features = open("tfg/bin/features/"+featuresName+".txt",'r')
+result = open("tfg/bin/inputs/featuresCoded/"+featuresCodedName+".txt",'w')
 
 #build the Dicctionary
 dic = {}

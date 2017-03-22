@@ -571,14 +571,14 @@ int main(int nArgs, char* args[]) {
     else if (featTypes == "OS") {lexicalfeats = false; syntactfeats=true;}
     else {cout << "el tipo de features tiene que ser ALL or OL or OS" << endl; exit(0);}
 
-    out[0].open("../inputs/features/"+featuresName+".txt");
+    out[0].open("tfg/bin/inputs/features/"+featuresName+".txt");
     createDiccs = false;
 
     if(arg3 != "default") {
     	createDiccs = true;
     	string diccName, diccOfClassName; diccName=args[3]; diccOfClassName=args[4];
-		out[1].open("../inputs/dicctionaries/"+diccName+".txt");
-		out[2].open("../inputs/diccOfClasses/"+diccOfClassName+".txt");    	
+		out[1].open("tfg/inputs/dicctionaries/"+diccName+".txt");
+		out[2].open("tfg/inputs/diccOfClasses/"+diccOfClassName+".txt");    	
     }
 
     util::init_locale(L"default");
