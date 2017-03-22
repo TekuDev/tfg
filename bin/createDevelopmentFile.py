@@ -1,20 +1,22 @@
 import string
+import sys
 
-files = open("../inputs/featuresCoded/fcTrain10000.txt",'r')
-files2 = open("../inputs/featuresCoded/fcDevelopment10000.txt",'w')
-files3 = open("../inputs/featuresCoded/fcParaOptimizar10000.txt",'w')
+num = sys.argv[1]
 
-file = files.readline()
-i = 0
-while(i < 2000000 and file != ''):
-	files2.write(file)
-	i += 1
-	file = files.readline()
 
-while(file != ''):
-	files3.write(file)
-	file = files.readline()
+allFeats = open("../inputs/featuresCoded/fcTrain"+num+"-N.txt",'r')
+train1 = open("../inputs/featuresCoded/fcTrain"+num+".txt",'w')
 
-files.close()
-files2.close()
-files3.close()
+
+line = allFeats.readline()
+j = 0
+#Create train1 file with all positives and 200K negatives examples.
+while(line != ''):
+	if line[0] == '0' and j < 200000:
+		train1.write(line)
+		j += 1
+	elif line[0] != '0':
+		train1.write(line)
+	line = allFeats.readline()
+allFeats.close()
+train1.close()

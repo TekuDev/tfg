@@ -1,0 +1,65 @@
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+PRUEBAS
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 0.01 5
+Your job 6079388 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 0.1 5
+Your job 6079389 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 1 5
+Your job 6079390 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 10 5
+Your job 6079391 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 100 5
+Your job 6079392 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 0.01 5
+Your job 6079393 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 0.1 5
+Your job 6079394 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 1 5
+Your job 6079395 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 10 5
+Your job 6079396 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 100 5
+Your job 6079397 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 0.01 10
+Your job 6079398 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 0.1 10
+Your job 6079399 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 1 10
+Your job 6079400 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 10 10
+Your job 6079401 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 100 10
+Your job 6079402 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 0.01 10
+Your job 6079403 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 0.1 10
+Your job 6079404 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 1 10
+Your job 6079405 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 10 10
+Your job 6079406 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 100 10
+Your job 6079407 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 0.01 50
+Your job 6079408 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 0.1 50
+Your job 6079409 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 1 50
+Your job 6079410 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 10 50
+Your job 6079411 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 0 100 50
+Your job 6079412 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 0.01 50
+Your job 6079413 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 0.1 50
+Your job 6079414 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 1 50
+Your job 6079415 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 10 50
+Your job 6079416 ("sendTest.sh") has been submitted
+gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 100 50
+Your job 6079417 ("sendTest.sh") has been submitted
