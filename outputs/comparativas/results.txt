@@ -1,0 +1,17 @@
+comparativa-1000-100k-0-0.01.txt
+comparativa-1000-100k-0-0.1.txt
+comparativa-1000-150k-0-0.01.txt
+comparativa-100-100k-0-0.1.txt
+comparativa-100-100k-1-100.txt
+comparativa-100-100k-1-10.txt
+comparativa-100-150k-0-0.01.txt
+comparativa-10-100k-0-0.01.txt
+comparativa-10-100k-0-0.1.txt
+comparativa-10-100k-1-0.01.txt
+comparativa-10-100k-1-0.1.txt
+comparativa-10-100k-1-100.txt
+comparativa-10-100k-1-10.txt
+comparativa-10-100k-1-1.txt
+comparativa-10-150k-0-0.01.txt
+comparativa-10-150k-1-100.txt
+comparativa-10-150k-1-10.txt
