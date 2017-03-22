@@ -1,5 +1,5 @@
 #!/bin/bash
-cortes=(10 100 1000 10000)
+cortes=(5 10 50)
 kernels=(0 1)
 Cs=(0.01 0.1 1 10 100)
 for i in ${kernels[@]};
@@ -8,8 +8,7 @@ do
 	do
 		for t in ${cortes[@]};
 		do
-			../libsvm-3.21/svm-train -c ${j} -t ${i} ../inputs/featuresCoded/fcTrain${t}-50.txt ../outputs/models/train${t}-50-${i}-${j}.model
-			../libsvm-3.21/svm-predict ../inputs/featuresCoded/fcDevelopment${t}.txt ../outputs/models/train${t}-50-${i}-${j}.model ../outputs/predictions/${t}-50-${i}-${j}_predict.txt > ../outputs/accuracy/${t}-50-${i}-${j}_acc.txt
+			qsub tfg/bin/sendTest.sh ${i} ${j} ${t}
 		done
 	done
 done
