@@ -93,5 +93,5 @@ f1g = (2*pg*rg)/(pg+rg)
 print("F1 = "+str(f1g)+" ("+str(2*pg*rg)+"/"+str(pg+rg)+")")
 
 print("---------------------")
-print("resum "+f+" "+str(pg)+" "+str(rg)+" "+str(f1g))
+print("resum "+fname+" "+str(pg)+" "+str(rg)+" "+str(f1g))
 print("---------------------")
