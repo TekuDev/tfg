@@ -63,3 +63,8 @@ gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 10 50
 Your job 6079416 ("sendTest.sh") has been submitted
 gnunez@logincluster:~/tfg/bin$ qsub -q medium sendTest.sh 1 100 50
 Your job 6079417 ("sendTest.sh") has been submitted
+
+--------------------------------------------------------------------
+
+gnunez@logincluster:~/tfg$ qsub bin/sendTest.sh 0 0.01 10
+Your job 6082634 ("sendTest.sh") has been submitted
