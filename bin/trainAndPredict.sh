@@ -8,7 +8,7 @@ do
 	do
 		for t in ${cortes[@]};
 		do
-			qsub tfg/bin/sendTest.sh ${i} ${j} ${t}
+			qsub -q medium tfg/bin/sendTest.sh ${i} ${j} ${t}
 		done
 	done
 done
