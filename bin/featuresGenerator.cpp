@@ -527,7 +527,9 @@ int descard = 0;
     //printConexions();
 
     //Create the 'none' features:
+    int i = 0;
     for (auto ei : events) {
+    	int j = 0;
         for (auto ej : events) {
             string event = ei.id;
             string related = ej.id;
@@ -535,7 +537,7 @@ int descard = 0;
             if (ei.sen != -1 and ei.pos != -1 and ej.sen != -1 and ej.pos != -1) {
             	if (event != related and not findConexion(event,related)
             		and ei.id[0] != 't' 
-            		and (((ei.sen - ej.sen) == 1 or (ei.sen - ej.sen) == 0)
+            		and ((i < j and ((ei.sen - ej.sen) == 1 or (ei.sen - ej.sen) == 0))
             		    or ej.id == "t0")){
 
 	                printClass("NONE");
@@ -552,7 +554,9 @@ int descard = 0;
             	}
             }
             else ++descard;
+        ++j;
         }
+    ++i;
     }
     out[0] << endl;
     cout << "discard: " << descard << endl;
@@ -571,7 +575,8 @@ int main(int nArgs, char* args[]) {
     else if (featTypes == "OS") {lexicalfeats = false; syntactfeats=true;}
     else {cout << "el tipo de features tiene que ser ALL or OL or OS" << endl; exit(0);}
 
-    out[0].open("tfg/bin/inputs/features/"+featuresName+".txt");
+    out[0].open("tfg/inputs/features/"+featuresName+".txt");
+    if(not out[0].is_open()) {cout << "error al abrir el documento features" << endl; exit(0);}
     createDiccs = false;
 
     if(arg3 != "default") {
