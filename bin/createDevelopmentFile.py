@@ -4,8 +4,8 @@ import sys
 num = sys.argv[1]
 
 
-allFeats = open("../inputs/featuresCoded/fcTrain"+num+"-N.txt",'r')
-train1 = open("../inputs/featuresCoded/fcTrain"+num+".txt",'w')
+allFeats = open("tfg/inputs/featuresCoded/fcTrain"+num+"-N.txt",'r')
+train1 = open("tfg/inputs/featuresCoded/fcTrain"+num+".txt",'w')
 
 
 line = allFeats.readline()
