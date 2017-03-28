@@ -29,10 +29,10 @@ class event {
 //global
 list<event> events;
 map<string, int> dic;
-set<string> clases;
+//set<string> clases;
 string numericFeatures[] = {"nWord","nSen","nVerb"};
 list< pair<string, string> > conexions;
-ofstream out[3];
+ofstream out[2];
 bool lexicalfeats, syntactfeats, createDiccs;
 
 
@@ -59,7 +59,7 @@ void printFeat(string f) {
 
 void printClass(string f) {
     out[0] << f << " ";
-    clases.insert(f);
+    //clases.insert(f);
 }
 
 void printFeatsSet(set<string> feats) {
@@ -118,11 +118,11 @@ void printDateInfo(string dateInfo, string word) {
 }
 
 void printDic() {
-    int i = 0;
-    for (auto c : clases) {
+    int i = 6;
+    /*for (auto c : clases) {
         out[2] << i << " " << c << endl;
         ++i;
-    }
+    }*/
 
     vector< pair<string,int> > vecAux(dic.begin(), dic.end());
     sort(vecAux.begin(), vecAux.end(), &sortFunc);
@@ -563,9 +563,8 @@ int descard = 0;
 }
 
 int main(int nArgs, char* args[]) {
-    if(nArgs != 4 and nArgs != 5) {cout << "Debes introducir el nombre del fichero [Features], el tipo de features generados [ALL, OL(only lexical), OS (Only Syntactical)] y el nombre del diccionario y diccionario de clases o default para no generarlo" << endl; exit(0);}
+    if(nArgs != 4) {cout << "Debes introducir el nombre del fichero [Features], el tipo de features generados [ALL, OL(only lexical), OS (Only Syntactical)] y el nombre del diccionario o default para no generarlo" << endl; exit(0);}
     string arg3=args[3];
-    if(nArgs == 4 and arg3 != "default") {cout << "Debes introducir el valor 'default' para no generar diccionarios" << endl; exit(0);}
     
     string featuresName, featTypes;
     featuresName = args[1]; featTypes = args[2];
@@ -581,10 +580,9 @@ int main(int nArgs, char* args[]) {
 
     if(arg3 != "default") {
     	createDiccs = true;
-    	string diccName, diccOfClassName; diccName=args[3]; diccOfClassName=args[4];
-		out[1].open("tfg/inputs/dicctionaries/"+diccName+".txt");
-		out[2].open("tfg/inputs/diccOfClasses/"+diccOfClassName+".txt");    	
-    }
+		out[1].open("tfg/inputs/dicctionaries/"+arg3+".txt");
+		if(not out[1].is_open()) {cout << "error al abrir el documento dicctionary" << endl; exit(0);}
+	}
 
     util::init_locale(L"default");
     wstring ipath=L"/usr/local";
