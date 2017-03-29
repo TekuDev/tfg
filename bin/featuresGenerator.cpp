@@ -614,7 +614,7 @@ int main(int nArgs, char* args[]) {
     hmm_tagger tagger(path+L"tagger.dat", true, FORCE_TAGGER);
     senses sen(path+L"senses.dat");
     ukb wsd(path+L"ukb.dat");
-    dep_treeler parser(path+L"dep_treeler/dependences.dat");
+    dep_treeler parser(path+L"dep/dependences.dat");
 
 	string pathFile;
     while(cin >> pathFile)
