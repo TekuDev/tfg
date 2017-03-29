@@ -585,7 +585,7 @@ int main(int nArgs, char* args[]) {
 	}
 
     util::init_locale(L"default");
-    wstring ipath=L"/home/soft.pool_sas/asiya/tools/xlike";
+    wstring ipath=L"/home/usuaris/padro/software/install/FL-privat";
     wstring path=ipath+L"/share/freeling/en/";
 
     tokenizer tk(path+L"tokenizer.dat"); 
@@ -614,7 +614,7 @@ int main(int nArgs, char* args[]) {
     hmm_tagger tagger(path+L"tagger.dat", true, FORCE_TAGGER);
     senses sen(path+L"senses.dat");
     ukb wsd(path+L"ukb.dat");
-    dep_treeler parser(path+L"dep/dependences.dat");
+    dep_treeler parser(path+L"dep_treeler/dependences.dat");
 
 	string pathFile;
     while(cin >> pathFile)
