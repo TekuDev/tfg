@@ -585,7 +585,7 @@ int main(int nArgs, char* args[]) {
 	}
 
     util::init_locale(L"default");
-    wstring ipath=L"/usr/local";
+    wstring ipath=L"/home/soft.pool_sas/asiya/tools/xlike";
     wstring path=ipath+L"/share/freeling/en/";
 
     tokenizer tk(path+L"tokenizer.dat"); 
