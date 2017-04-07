@@ -81,17 +81,23 @@ for i in range(0,6):
 		f1 = (2*p*r)/(p+r)
 		print("F1 = "+str(f1)+" ("+str(2*p*r)+"/"+str(p+r)+")")
 	except Exception as e:
-		print("Esta clase nunca se ha ")
+		print("Esta clase nunca se ha predicho")
 	
 	print("---------------------")
 print("Global estadistics:")
-pg = sumDiagonal(table)/sumRows(table)*100
-print("Precision = "+str(pg)+" ("+str(sumDiagonal(table))+"/"+str(sumRows(table))+")")
-rg = sumDiagonal(table)/sumColums(table)*100
-print("Recall = "+str(rg)+" ("+str(sumDiagonal(table))+"/"+str(sumColums(table))+")")
-f1g = (2*pg*rg)/(pg+rg)
-print("F1 = "+str(f1g)+" ("+str(2*pg*rg)+"/"+str(pg+rg)+")")
+try: 
+	pg = sumDiagonal(table)/sumRows(table)*100
+	print("Precision = "+str(pg)+" ("+str(sumDiagonal(table))+"/"+str(sumRows(table))+")")
+	rg = sumDiagonal(table)/sumColums(table)*100
+	print("Recall = "+str(rg)+" ("+str(sumDiagonal(table))+"/"+str(sumColums(table))+")")
+	f1g = (2*pg*rg)/(pg+rg)
+	print("F1 = "+str(f1g)+" ("+str(2*pg*rg)+"/"+str(pg+rg)+")")
 
-print("---------------------")
-print("resum "+fname+" "+str(pg)+" "+str(rg)+" "+str(f1g))
-print("---------------------")
+	print("---------------------")
+	print("resum "+fname+" "+str(pg)+" "+str(rg)+" "+str(f1g))
+	print("---------------------")
+except Exception as e:
+	print("Solo se ha predicho la clase NONE")
+	print("---------------------")
+	print("resum "+fname+" 0 0 0")
+	print("---------------------")

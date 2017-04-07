@@ -1,20 +1,21 @@
 import string
 import sys
+import random
 
-num = sys.argv[1]
+readFile = sys.argv[1]
+writeFile = sys.argv[2]
+percent = int(sys.argv[3])
 
 
-allFeats = open("tfg/inputs/featuresCoded/fcTrain"+num+"-N.txt",'r')
-train1 = open("tfg/inputs/featuresCoded/fcTrain"+num+".txt",'w')
+allFeats = open("tfg/inputs/featuresCoded/"+readFile+".txt",'r')
+train1 = open("tfg/inputs/featuresCoded/"+writeFile+".txt",'w')
 
 
 line = allFeats.readline()
-j = 0
 #Create train1 file with all positives and 200K negatives examples.
 while(line != ''):
-	if line[0] == '0' and j < 200000:
+	if line[0] == '0' and random.randint(1,100) < percent:
 		train1.write(line)
-		j += 1
 	elif line[0] != '0':
 		train1.write(line)
 	line = allFeats.readline()

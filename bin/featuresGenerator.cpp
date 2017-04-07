@@ -242,7 +242,7 @@ void generateSyntacticalFeats(event &ei, event &ej, list<sentence> &ls) {
     */
 
     //If found the word print the features
-    if(found) {
+    if(found and ei.id != "t0") {
         if (not fword.get_senses().empty()) {
             string sens = util::wstring2string(fword.get_senses().begin()->first);
             string feat = "w1Sense_"+sens; printFeat(feat);
@@ -286,7 +286,7 @@ void generateSyntacticalFeats(event &ei, event &ej, list<sentence> &ls) {
     */
 
     //If found the word print the features
-    if(found) {
+    if(found and ej.id != "t0") {
         if (not sword.get_senses().empty()) {
             string sens = util::wstring2string(sword.get_senses().begin()->first);
             string feat = "w2Sense_"+sens; printFeat(feat);
@@ -355,53 +355,56 @@ void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls) {
         string f1after = "w1After="+util::wstring2string(w->get_form());
         printFeat(f1after);
     }
-    //--w;
+    --w;
     bool fin = false;
     int senAct = fsen; int wordAct = fpos;
 
     //second word
-    while(not fin and sen != ls.end()) {
-        while(not fin and w != sen->end()) {
-        	//out[0] << "posACT:"<<wordAct<<endl;
-    		//out[0] << "senACT:"<<senAct<<endl;
-        	
-        	//out[0] << util::wstring2string(w->get_form())<<endl;
-            string form = "wordInMiddle="+util::wstring2string(w->get_form());
-            string lemma = "WIMLemma="+util::wstring2string(w->get_lemma());
-            repetableFeats.insert(form);
-            repetableFeats.insert(lemma);
-            
-            string tag = util::wstring2string(w->get_tag());
-            if(tag[0]=='V') ++nVerb;
-
-            if(senAct == ssen and wordAct == spos) {
-                fin = true;
-                if (w != sen->begin()) {
-                    --w; 
-                    string f2before = "w2Before="+util::wstring2string(w->get_form());
-                    printFeat(f2before);
-                    ++w;
-                }
+    if (ej.id == "t0") printFeat("w1t0");
+    else {
+        while(not fin and sen != ls.end()) {
+            while(not fin and w != sen->end()) {
+            	//out[0] << "posACT:"<<wordAct<<endl;
+        		//out[0] << "senACT:"<<senAct<<endl;
+            	
+            	//out[0] << util::wstring2string(w->get_form())<<endl;
+                string form = "wordInMiddle="+util::wstring2string(w->get_form());
+                string lemma = "WIMLemma="+util::wstring2string(w->get_lemma());
+                repetableFeats.insert(form);
+                repetableFeats.insert(lemma);
                 
-                ++w;
-                if (w != sen->end()) {
-                    string f2after = "w2After="+util::wstring2string(w->get_form());
-                    printFeat(f2after);
-                }
-                --w;
-            }
-            //out[0] << "nWord:"<<nWord<<endl;
-    		//out[0] << "word:"<<util::wstring2string(w->get_form())<<endl;
+                string tag = util::wstring2string(w->get_tag());
+                if(tag[0]=='V') ++nVerb;
 
-            ++nWord;
-            ++w;
-            ++wordAct;
+                if(senAct == ssen and wordAct == spos) {
+                    fin = true;
+                    if (w != sen->begin()) {
+                        --w; 
+                        string f2before = "w2Before="+util::wstring2string(w->get_form());
+                        printFeat(f2before);
+                        ++w;
+                    }
+                    
+                    ++w;
+                    if (w != sen->end()) {
+                        string f2after = "w2After="+util::wstring2string(w->get_form());
+                        printFeat(f2after);
+                    }
+                    --w;
+                }
+                //out[0] << "nWord:"<<nWord<<endl;
+        		//out[0] << "word:"<<util::wstring2string(w->get_form())<<endl;
+
+                ++nWord;
+                ++w;
+                ++wordAct;
+            }
+            ++senAct;
+            ++sen;
+            ++nSen;
+            w = sen->begin();
+            wordAct=0;
         }
-        ++senAct;
-        ++sen;
-        ++nSen;
-        w = sen->begin();
-        wordAct=0;
     }
     //sen->get_words().size();
 
@@ -426,10 +429,12 @@ void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls) {
     }
 
     //Print the distances
-    string f8 = "nWord="+to_string(nWord);
-    string f9 = "nVerb="+to_string(nVerb);
-    string f10 = "nSen="+to_string(nSen);
-    printFeat(f8); printFeat(f9); printFeat(f10);
+    if (ej.id != "t0") {
+        string f8 = "nWord="+to_string(nWord);
+        string f9 = "nVerb="+to_string(nVerb);
+        string f10 = "nSen="+to_string(nSen);
+        printFeat(f8); printFeat(f9); printFeat(f10);
+    }
 }
 
 void generateFeatures(pugi::xml_document &doc, wstring txt, tokenizer &tk, splitter &sp, maco &morfo, hmm_tagger &tagger, splitter::session_id &sid, senses &sen, ukb &wsd, dep_treeler &parser) {
@@ -585,7 +590,7 @@ int main(int nArgs, char* args[]) {
 	}
 
     util::init_locale(L"default");
-    wstring ipath=L"/home/usuaris/padro/software/install/FL-privat";
+    wstring ipath=L"/usr/local";
     wstring path=ipath+L"/share/freeling/en/";
 
     tokenizer tk(path+L"tokenizer.dat"); 
