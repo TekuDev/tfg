@@ -11,7 +11,7 @@ do
 		do
 			for h in ${nNones[@]};
 			do
-				qsub -q medium tfg/bin/sendTest.sh ${i} ${j} ${t}-${h}
+				qsub -q medium tfg/bin/sendTest.sh ${i} ${j} ${t} ${h}
 			done
 		done
 	done
