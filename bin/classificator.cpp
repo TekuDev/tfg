@@ -16,12 +16,9 @@
 using namespace std;
 using namespace freeling;
 
-const classifier* classif;
 
-
-int main(int argc, char const *argv[])
+classificator::classificator(const std::wstring &necFile)
 {
-	wstring necFile = argv[1];
     wstring lexFile,rgfFile,modelFile;
     wstring clastype, classnames;
     wstring path=necFile.substr(0,necFile.find_last_of(L"/\\")+1);
@@ -93,9 +90,24 @@ int main(int argc, char const *argv[])
 	if (clastype==L"SVM") {
       classif = new svm(modelFile,classnames);
 	}
+}
 
-	//Extract features and classify them.
-https://github.com/TALP-UPC/FreeLing/blob/master/src/libfreeling/nec.cc
+//Extract features and classify them.
+void classificator::predict(std::wstring &text) {
+	featGenerator *featGen = new featGenerator(true, true);
+	double *pred = new double[classif->get_nlabels()];
 
-	/*Use featGen to generate features from the text and then predict from each pair*/
+	//create example to classify
+	example exmp(classif->get_nlabels());
+
+	//add features
+	set<int> features = featGen->generateFeaturesSet(text);
+	for (auto f : features) exmp.add_feature(f);
+
+	//classify
+	classif->classify(exmp,pred);
+
+	//read and print the results
+	
+
 }

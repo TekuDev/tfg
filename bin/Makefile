@@ -14,10 +14,16 @@ BOOSTLIBDIR=/usr/local/lib
 PATHS=-L$(FREELINGDIR)/lib -I$(FREELINGDIR)/include -I$(FREELINGDIR)/include/foma -L$(BOOSTLIBDIR) -I$(BOOSTINCLUDEDIR)
 LIBS=-lfreeling -lboost_system
 
-all:	featuresGenerator
+all:	featuresGenerator generateFeaturesFromTxt main
 
 featuresGenerator: featuresGenerator.cpp
-	g++ -std=c++11 -o featuresGenerator featuresGenerator.cpp ../pugixml-1.7/src/pugixml.hpp ../pugixml-1.7/src/pugixml.cpp $(PATHS) $(LIBS)
+	g++ -std=c++11 -o featuresGenerator featuresGenerator.cpp ../pugixml-1.7/src/pugixml.hpp ../pugixml-1.7/src/pugixml.cpp featGenerator.h event.h $(PATHS) $(LIBS)
+
+generateFeaturesFromTxt: generateFeaturesFromTxt.cpp
+	g++ -std=c++11 -o generateFeaturesFromTxt generateFeaturesFromTxt.cpp featGenerator.h event.h $(PATHS) $(LIBS)
+
+main: main.cpp
+	g++ -std=c++11 -o main main.cpp featGenerator.h event.h $(PATHS) $(LIBS)
 
 clean:
-	rm -f featuresGenerator
+	rm -f featuresGenerator generateFeaturesFromTxt main
