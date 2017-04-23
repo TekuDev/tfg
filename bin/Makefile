@@ -23,7 +23,7 @@ generateFeaturesFromTxt: generateFeaturesFromTxt.cpp
 	g++ -std=c++11 -o generateFeaturesFromTxt generateFeaturesFromTxt.cpp featGenerator.h event.h $(PATHS) $(LIBS)
 
 main: main.cpp
-	g++ -std=c++11 -o main main.cpp featGenerator.h event.h $(PATHS) $(LIBS)
+	g++ -std=c++11 -o main main.cpp featGenerator.h featGenerator.cpp event.h $(PATHS) $(LIBS)
 
 clean:
 	rm -f featuresGenerator generateFeaturesFromTxt main

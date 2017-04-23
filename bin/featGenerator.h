@@ -1,9 +1,11 @@
+#ifndef _FEATGEN_H
+#define _FEATGEN_H
+
 #include "event.h"
 #include <map>
 #include <vector>
 #include <string>
 #include <list>
-
 
 class featGenerator
 {
@@ -50,3 +52,5 @@ private:
 
 	bool sortFunc(pair<string,int> first, pair<string,int> second);
 };
+
+#endif

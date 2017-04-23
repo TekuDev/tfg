@@ -1,3 +1,6 @@
+#ifndef _EVENT_H
+#define _EVENT_H
+
 #include <iostream>
 #include <string>
 #include "freeling.h"
@@ -21,3 +24,5 @@ class event {
     }
     ~event() {};
 };
+
+#endif

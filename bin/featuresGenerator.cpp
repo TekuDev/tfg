@@ -12,7 +12,7 @@ using namespace freeling;
 
 class event {
   public:
-    wstring type;
+    wstring type; 
     int start_offs;
     int end_offs;
     string id;
@@ -75,7 +75,7 @@ void printConexions() {
     }
 }
 
-void printEvents(list<sentence> &ls) {	
+void printEvents() {	
     cout << "Print events" << endl;
 	for(auto e: events) {
         wstring type = e.type;
@@ -198,7 +198,7 @@ void addFreelingInfoToEvents(list<sentence> &ls) {
         }
     }
     cout << "not found: " << notfound << endl;
-    //printEvents(ls);
+    //printEvents();
 }
 
 event findEventInEvents(string e) {
