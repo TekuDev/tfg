@@ -59,7 +59,7 @@ int main(int nArgs, char* args[]) {
 
     featGenerator *featGen = new featGenerator(lexicalfeats,syntactfeats);
 
-    string pathFeat = "tfg/inputs/features2/"+featuresName+".txt";
+    string pathFeat = "../inputs/features2/"+featuresName+".txt";
     if(not featGen->openFile(0,pathFeat)) {cout << "error al abrir el documento features" << endl; exit(0);}
 
     string text = "";
@@ -118,8 +118,17 @@ int main(int nArgs, char* args[]) {
     wsd.analyze(ls);
     parser.analyze(ls);
 
+//https://github.com/TALP-UPC/FreeLing/blob/master/src/main/simple_examples/coreferences.cc
+
+    //Create list of iterators
+    list<paragraph::const_iterator> sents;
+    //for (paragraph::const_iterator s=ls.begin(); s!=ls.end(); ++s)
+    paragraph::const_iterator s=(&ls)->begin();
+    sents.push_back(s);
+
     //Add events to events::list<event>
-    extractEvents(ls, featGen);
+    featGen->createEvents(sents);
+    //featGen->printEvents();
 
     //Create features:
     featGen->generateFeatures(ls);

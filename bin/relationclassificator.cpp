@@ -11,11 +11,14 @@
 
 #include "freeling/morfo/configfile.h"
 #include "featGenerator.h"
+#include "event.h"
+#include "relationclassificator.h"
 #include "freeling/omlet/svm.h"
 
 using namespace std;
 using namespace freeling;
 
+//https://github.com/TALP-UPC/FreeLing/blob/master/data/en/nerc/nec/nec-ab-rich.dat
 
 relationclassificator::relationclassificator(const std::wstring &configFile)
 {
@@ -32,7 +35,7 @@ relationclassificator::relationclassificator(const std::wstring &configFile)
     cfg.add_section(L"Classes",CLASSES);
 
     if (not cfg.open(configFile))
-      ERROR_CRASH(L"Error opening file "+configFile);
+      wcout << L"Error opening file " << configFile << endl;
 
     wstring line;
     while (cfg.get_content_line(line)) {
@@ -76,50 +79,58 @@ relationclassificator::relationclassificator(const std::wstring &configFile)
       classif = new svm(modelFile,classnames);
 	}
 
-	featGen = new featGenerator(true, true);
 }
 
 //Extract features and classify them.
-void relationclassificator::predict(freeling::document &doc) {
-	list<wstring> predictions;
-	list<string> examples;
+void relationclassificator::predict(const freeling::document &doc) const {
+	featGenerator featGen(true, true);
+
+	vector<string> predictions;
+	vector<string> examples;
 
 	//for (paragraf)
-		list<freeling::sentence> ls;
-		//for (ls)
-			//create events
-			//make pairs
-			list<pair(event, event)> pairs;
-			for (auto pi : pairs)
-			{
-				double *pred = new double[classif->get_nlabels()];
-				//create example to classify
-				example exmp(classif->get_nlabels());
-				//add features
-				set<int> features = featGen->generateFeaturesSet(pi.first, pi.second, ls);
-				for (auto f : features) exmp.add_feature(f);
+	list<paragraph::const_iterator> sents;
+	for (document::const_iterator p=doc.begin(); p!=doc.end(); ++p)
+		for (paragraph::const_iterator s=p->begin(); s!=p->end(); ++s)
+           sents.push_back(s);
+	
+	//create events
+	featGen.createEvents(sents);
+	//make pairs
+	list<std::pair<event,event>> pairs = featGen.getPairs();
+	for (auto pi : pairs)
+	{
+		cout << pi.first.id << "-" << pi.second.id << endl;
+		/*double *pred = new double[classif->get_nlabels()];
+		//create example to classify
+		example exmp(classif->get_nlabels());
+		//add features
+		set<int> features = featGen.generateFeaturesSet(pi.first, pi.second, ls);
+		for (auto f : features) exmp.add_feature(f);
 
-				//classify
-				classif->classify(exmp,pred);
+		//classify
+		classif->classify(exmp,pred);
 
 
-				double max=pred[0]; 
-		        wstring tag=classif->get_label(0);
-				for (int j=1; j<classif->get_nlabels(); ++j) {
-					if (pred[j]>max) {
-						max=pred[j];
-						tag=classif->get_label(j);
-					}
-				}
-
-				predictions.push_back(tag);
-				examples.push_back(pi.first.id+"-"+pi.second.id);
-
+		double max=pred[0]; 
+        wstring tag=classif->get_label(0);
+		for (int j=1; j<classif->get_nlabels(); ++j) {
+			if (pred[j]>max) {
+				max=pred[j];
+				tag=classif->get_label(j);
 			}
+		}
+
+		predictions.push_back(tag);
+		examples.push_back(pi.first.id+"-"+pi.second.id);
+		*/
+	}
 	
 	//read and print the results
 	for (int i = 0; i < examples.size(); ++i) {
-		cout << examples[i]+" have "+predictions[i] << endl;
+		cout << examples[i] << " have " << predictions[i] << endl;
 	}
+
+	~featGenerator() featGen;
 
 }

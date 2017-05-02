@@ -1,4 +1,5 @@
 #include "event.h"
+#include "featGenerator.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -7,18 +8,52 @@
 #include <map>
 #include "freeling.h"
 #include "freeling/morfo/traces.h"
+#include <utility>
 using namespace std;
 using namespace freeling;
 
 featGenerator::featGenerator() {
 	this->lexicalfeats = this->syntactfeats = false;
-	numericFeatures[] = {"nWord","nSen","nVerb"};
+	//this->numericFeatures[3] = {"nWord","nSen","nVerb"};
 }
 
 featGenerator::featGenerator(bool lexicalfeats, bool syntactfeats) {
 	this->lexicalfeats = lexicalfeats;
 	this->syntactfeats = syntactfeats;
-	numericFeatures[] = {"nWord","nSen","nVerb"};
+	//this->numericFeatures[3] = {"nWord","nSen","nVerb"};
+}
+
+//Create events from list<sentence> to Events list.
+void featGenerator::createEvents(const list<paragraph::const_iterator> &ls)  {
+	int sen = 0;
+    int i = 0;
+
+    list<paragraph::const_iterator>::const_iterator s=ls.begin();
+    while(s != ls.end()) {
+        sentence::const_iterator w = (*s)->begin();
+        while(w != (*s)->end()) {
+            string tag = util::wstring2string(w->get_tag());
+            if(tag[0] == 'V' || tag == "W") {
+                event *ev = new event(tag);
+                event e = *ev;
+
+                e.w = &(*w);
+                e.pos = (*w).get_position();
+                e.sen = sen;
+                if(tag[0] == 'V')
+                	e.id = "e"+to_string(i);
+               	else
+               		e.id = "t"+to_string(i);
+                e.word = util::wstring2string(w->get_form());
+
+                addEvent(e);
+                ++i;
+            }
+            ++w;
+        }
+        ++sen;
+        ++s;
+    }
 }
 
 //Add elements to structures
@@ -58,7 +93,7 @@ void featGenerator::printEvents() {
         const freeling::word w = *e.w;
         int pos = e.pos;
         int sen = e.sen;
-        cout << "pos: " << pos << " en la frase " << sen << " ";
+        cout << "pos: " << pos << " en la frase " << sen << " " << endl;
         wcout << "form: " << w.get_form() << endl;
     }
 }
@@ -72,19 +107,19 @@ void featGenerator::printConexions() {
 
 //Principal functions, generate features and dicctionary
 void featGenerator::printDic(int numOfClasses) {
-	if(out[1].is_open()) {
+	if(this->out[1].is_open()) {
 		int i = numOfClasses;
 
 	    vector< pair<string,int> > vecAux(this->dic.begin(), this->dic.end());
-	    sort(vecAux.begin(), vecAux.end(), &sortFunc);
-	    for(auto p : vecAux) {out[1] << i << " " << p.first << " " << p.second << endl; ++i;}
+	    sort(vecAux.begin(), vecAux.end(), &featGenerator::sortFunc);
+	    for(auto p : vecAux) {this->out[1] << i << " " << p.first << " " << p.second << endl; ++i;}
 	}
 	else cout << "no se ha abierto el fichero del diccionario" << endl; 
 }
 void featGenerator::printFeat(string feat) {
-	if(out[0].is_open()) {
-		std::replace(f.begin(),f.end(),' ','_');
-    	out[0] << f << " ";
+	if(this->out[0].is_open()) {
+		std::replace(feat.begin(),feat.end(),' ','_');
+    	this->out[0] << feat << " ";
 	}
 	else cout << "no se ha abierto el fichero de features" << endl;
 }
@@ -96,7 +131,7 @@ void featGenerator::printFeatsSet(set<string> feats) {
 }
 
 void featGenerator::generateFeatures(list<sentence> &ls) {
-	if(out[0].is_open()) {
+	if(this->out[0].is_open()) {
 		//Create features:
 	    int i = 0;
 	    for (auto ei : this->events) {
@@ -106,7 +141,7 @@ void featGenerator::generateFeatures(list<sentence> &ls) {
 	            string related = ej.id;
 	                        
 	        	if (event != related and ei.id[0] != 't' and i < j and ((ei.sen - ej.sen) == 1 or (ei.sen - ej.sen) == 0)){
-
+	        		
 	                //Features from Freeling:
 	                if(this->lexicalfeats) {
 	                    generateLexicalFeats(ei,ej,ls);
@@ -351,6 +386,27 @@ void featGenerator::generateSyntacticalFeats(event &ei, event &ej, list<sentence
 //gets
 list<event> featGenerator::getEvents() {
 	return this->events;
+}
+
+list<std::pair<event,event>> featGenerator::getPairs() {
+	list<std::pair<event,event>> pairs;
+	int i = 0;
+    for (auto ei : events) {
+    	int j = 0;
+        for (auto ej : events) {
+            string event = ei.id;
+            string related = ej.id;
+                        
+        	if (event != related and ei.id[0] != 't' and i < j and ((ei.sen - ej.sen) == 1 or (ei.sen - ej.sen) == 0)){
+
+                pairs.push_back(make_pair(ei,ej));
+        	}
+        ++j;
+        }
+    ++i;
+    }
+
+    return pairs;
 }
 
 //sets

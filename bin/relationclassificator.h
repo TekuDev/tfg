@@ -16,10 +16,7 @@ class relationclassificator
 {
  private: 
     /// classifier
-    const classifier *classif;
-
-    ///feature generator
-    const featGenerator *featGen;
+    classifier *classif;
 
   public:
 	/// Constructor
@@ -28,7 +25,7 @@ class relationclassificator
 	~relationclassificator();
 
     /// predict from string
-    void predict(std::wstring &) const;
+    void predict(const freeling::document &doc) const;
 };
 
 
