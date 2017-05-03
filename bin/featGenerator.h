@@ -38,9 +38,11 @@ public:
 	void printDic(int numOfClasses);
 	void printFeat(string feat);
 	void printFeatsSet(set<string> feats);
-	void generateFeatures(list<sentence> &ls);
-	void generateLexicalFeats(event &ei, event &ej, list<sentence> &ls);
-	void generateSyntacticalFeats(event &ei, event &ej, list<sentence> &ls);
+	void generateFeatures(const list<paragraph::const_iterator> &ls);
+	void generateLexicalFeats(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
+	void generateSyntacticalFeats(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
+	list<string> generateFeatures2String(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
+	list<pair<int,int>> codeFeatures(list<string> features, map<string,int> dic);
 
 	//gets
 	list<event> getEvents();

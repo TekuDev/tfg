@@ -79,7 +79,27 @@ relationclassificator::relationclassificator(const std::wstring &configFile)
       classif = new svm(modelFile,classnames);
 	}
 
+
+
+	ifstream in;
+	in.open(util::wstring2string(lexFile));
+	if (not in.is_open()) cout << "error al cargar el diccionario" << endl;
+	else {
+		string l1,l2, freq;
+		while (in >> l1 >> l2 >> freq) {
+			if(stoi(freq) > 5) dic[l2] = stoi(l1);
+		}
+		in.close();
+
+		/*for (auto p : dic) {
+			cout << p.first << ":" << p.second << endl;
+		}*/
+	}
+
 }
+
+//Destructor
+relationclassificator::~relationclassificator() {}
 
 //Extract features and classify them.
 void relationclassificator::predict(const freeling::document &doc) const {
@@ -105,7 +125,8 @@ void relationclassificator::predict(const freeling::document &doc) const {
 		//create example to classify
 		example exmp(classif->get_nlabels());
 		//add features
-		set<int> features = featGen.generateFeaturesSet(pi.first, pi.second, ls);
+		list<string> features = featGen.generateFeatures2String(pi.first, pi.second, sents);
+		list<pair<int,int>> feautresCoded = featGen.codeFeatures(features, dic);
 		for (auto f : features) exmp.add_feature(f);
 
 		//classify
@@ -131,6 +152,22 @@ void relationclassificator::predict(const freeling::document &doc) const {
 		cout << examples[i] << " have " << predictions[i] << endl;
 	}
 
-	~featGenerator() featGen;
+}
 
+//private:
+vector<string> relationclassificator::split(string s, char delim) {
+	vector<string> ssplited;
+	
+	string part = "";
+	for (auto c : s) {
+		if(c == delim) {
+			ssplited.push_back(part);
+			part = "";
+		}
+		else{
+			part += c;
+		}
+	}
+
+	return ssplited;
 }

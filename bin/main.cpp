@@ -9,42 +9,11 @@
 #include "freeling/morfo/traces.h"
 #include "event.h"
 #include "featGenerator.h"
+#include "relationclassificator.h"
 using namespace std;
 using namespace freeling;
 
-
-//extract Events from Freeling info.
-void extractEvents(list<sentence> &ls, featGenerator *featGen) {
-    int sen = 0;
-    int i = 0;
-
-    list<freeling::sentence>::const_iterator s=ls.begin();
-    while(s != ls.end()) {
-        sentence::const_iterator w = s->begin();
-        while(w != s->end()) {
-            string tag = util::wstring2string(w->get_tag());
-            if(tag[0] == 'V' || tag == "W") {
-                event *ev = new event(tag);
-                event e = *ev;
-
-                e.w = &(*w);
-                e.pos = (*w).get_position();
-                e.sen = sen;
-                e.id = "e"+to_string(i);
-                e.word = util::wstring2string(w->get_form());
-
-                featGen->addEvent(e);
-                ++i;
-            }
-            ++w;
-        }
-        ++sen;
-        ++s;
-    }
-}
-
-
-
+/*
 int main(int nArgs, char* args[]) {
     if(nArgs != 3) {cout << "Debes introducir el nombre del fichero [Features] y el tipo de features generados [ALL, OL(only lexical), OS (Only Syntactical)]" << endl; exit(0);}
     
@@ -131,10 +100,83 @@ int main(int nArgs, char* args[]) {
     //featGen->printEvents();
 
     //Create features:
-    featGen->generateFeatures(ls);
+    featGen->generateFeatures(sents);
 
     sp.close_session(sid);
 
     cout << "Features generados" << endl;
     cout << "Number of events = " << featGen->getEvents().size() << endl;
+}
+*/
+
+
+int main(int nArgs, char* args[]) {
+    string arg1 = args[1];
+    wstring configFile(arg1.begin(),arg1.end());
+    
+    relationclassificator *relClass = new relationclassificator(configFile);
+
+    wstring wtext = L"";
+    wstring word;
+    wcin >> word;
+    wtext += word;
+    while(wcin >> word)
+        wtext = wtext+L" "+word;
+    wcout << wtext << endl;
+
+    cout << "Pasamos el texto por el Freeling" << endl;
+    //Pasamos el texto por el Freeling
+    util::init_locale(L"default");
+    wstring ipath=L"/usr/local";
+    wstring path=ipath+L"/share/freeling/en/";
+
+    tokenizer tk(path+L"tokenizer.dat"); 
+    splitter sp(path+L"splitter.dat");
+    splitter::session_id sid=sp.open_session();
+    maco_options opt(L"en");
+
+    opt.UserMapFile=L"";
+    opt.LocutionsFile=path+L"locucions.dat"; opt.AffixFile=path+L"afixos.dat";
+    opt.ProbabilityFile=path+L"probabilitats.dat"; opt.DictionaryFile=path+L"dicc.src";
+    opt.NPdataFile=path+L"np.dat"; opt.PunctuationFile=path+L"../common/punct.dat"; 
+
+    maco morfo(opt);
+    morfo.set_active_options (false,// UserMap
+                             true, // NumbersDetection,
+                             true, //  PunctuationDetection,
+                             true, //  DatesDetection,
+                             true, //  DictionarySearch,
+                             true, //  AffixAnalysis,
+                             false, //  CompoundAnalysis,
+                             true, //  RetokContractions,
+                             true, //  MultiwsDetection,
+                             true, //  NERecognition,
+                             false, //  QuantitiesDetection,
+                             true);  //  ProbabilityAssignment
+    hmm_tagger tagger(path+L"tagger.dat", true, FORCE_TAGGER);
+    senses sen(path+L"senses.dat");
+    ukb wsd(path+L"ukb.dat");
+    dep_treeler parser(path+L"dep_treeler/dependences.dat");
+
+    list<freeling::word> lw; 
+    list<sentence> ls;
+
+    lw=tk.tokenize(wtext);
+    ls=sp.split(sid, lw, true);
+    morfo.analyze(ls);
+    tagger.analyze(ls);
+    sen.analyze(ls);
+    wsd.analyze(ls);
+    parser.analyze(ls);
+
+    cout << "creamos el documento" << endl;
+
+    document doc;
+    doc.insert(doc.end(),ls);
+
+    relClass->predict(doc);
+
+    sp.close_session(sid);
+
+    cout << "Done" << endl;
 }

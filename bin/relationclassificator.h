@@ -18,6 +18,9 @@ class relationclassificator
     /// classifier
     classifier *classif;
 
+    ///dictionary
+    map<string,int> dic;
+
   public:
 	/// Constructor
 	relationclassificator(const std::wstring &);
@@ -26,6 +29,9 @@ class relationclassificator
 
     /// predict from string
     void predict(const freeling::document &doc) const;
+
+  private:
+  	vector<string> split(string s, char delim);
 };
 
 

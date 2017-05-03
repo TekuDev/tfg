@@ -22,8 +22,8 @@ featuresGenerator: featuresGenerator.cpp
 generateFeaturesFromTxt: generateFeaturesFromTxt.cpp
 	g++ -std=c++11 -o generateFeaturesFromTxt generateFeaturesFromTxt.cpp featGenerator.h event.h $(PATHS) $(LIBS)
 
-main: main.cpp
-	g++ -std=c++11 -o main main.cpp featGenerator.h featGenerator.cpp event.h $(PATHS) $(LIBS)
+main: main.cpp featGenerator.h featGenerator.cpp event.h relationclassificator.h relationclassificator.cpp 
+	g++ -std=c++11 -o main main.cpp featGenerator.h featGenerator.cpp event.h relationclassificator.h relationclassificator.cpp $(PATHS) $(LIBS)
 
 clean:
 	rm -f featuresGenerator generateFeaturesFromTxt main
