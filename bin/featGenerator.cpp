@@ -14,11 +14,13 @@ using namespace freeling;
 
 featGenerator::featGenerator() {
 	this->lexicalfeats = this->syntactfeats = false;
+	current_features= "";
 }
 
 featGenerator::featGenerator(bool lexicalfeats, bool syntactfeats) {
 	this->lexicalfeats = lexicalfeats;
 	this->syntactfeats = syntactfeats;
+	current_features = "";
 }
 
 featGenerator::~featGenerator() {}
@@ -43,7 +45,7 @@ void featGenerator::createEvents(const list<paragraph::const_iterator> &ls)  {
                 if(tag[0] == 'V')
                 	e.id = "e"+to_string(i);
                	else
-               		e.id = "t"+to_string(i);
+               		e.id = "t"+to_string(i+1);
                 e.word = util::wstring2string(w->get_form());
 
                 addEvent(e);
@@ -117,11 +119,16 @@ void featGenerator::printDic(int numOfClasses) {
 	else cout << "no se ha abierto el fichero del diccionario" << endl; 
 }
 void featGenerator::printFeat(string feat) {
-	if(this->out[0].is_open()) {
+	if(this->out[0].is_open()) 
+	{
 		std::replace(feat.begin(),feat.end(),' ','_');
     	this->out[0] << feat << " ";
 	}
-	else cout << "no se ha abierto el fichero de features" << endl;
+	else //cout << "no se ha abierto el fichero de features" << endl;
+	{
+		std::replace(feat.begin(),feat.end(),' ','_');
+		current_features = current_features+feat+" ";
+	}
 }
 
 void featGenerator::printFeatsSet(set<string> feats) {
@@ -173,7 +180,7 @@ void featGenerator::generateLexicalFeats(event &ei, event &ej, const list<paragr
 
     const freeling::word *fword, *sword;
 
-    if(ei.start_offs < ej.start_offs) {
+    if(ei.sen < ej.sen or (ei.sen == ej.sen and ei.pos <= ej.pos)) {
         fword = ei.w; fsen = ei.sen; fpos = ei.pos;
         sword = ej.w; ssen = ej.sen; spos = ej.pos;
     }
@@ -214,13 +221,12 @@ void featGenerator::generateLexicalFeats(event &ei, event &ej, const list<paragr
             while(not fin and w != (*sen)->end()) {
             	//out[0] << "posACT:"<<wordAct<<endl;
         		//out[0] << "senACT:"<<senAct<<endl;
-            	
             	//out[0] << util::wstring2string(w->get_form())<<endl;
                 string form = "wordInMiddle="+util::wstring2string(w->get_form());
                 string lemma = "WIMLemma="+util::wstring2string(w->get_lemma());
                 repetableFeats.insert(form);
                 repetableFeats.insert(lemma);
-                
+
                 string tag = util::wstring2string(w->get_tag());
                 if(tag[0]=='V') ++nVerb;
 
@@ -259,7 +265,6 @@ void featGenerator::generateLexicalFeats(event &ei, event &ej, const list<paragr
         }
     }
     //(*sen)->get_words().size();
-
     //print Forms and Lemmas
     string f1lemma = "w1Lemma="+util::wstring2string(fword->get_lemma());
     string f2lemma = "w2lemma="+util::wstring2string(sword->get_lemma());
@@ -278,7 +283,6 @@ void featGenerator::generateLexicalFeats(event &ei, event &ej, const list<paragr
         string dateInfo = util::wstring2string(sword->get_lemma());
         printDateInfo(dateInfo, "w2");
     }
-
     //Print the distances
     if (ej.id != "t0") {
         string f8 = "nWord="+to_string(nWord);
@@ -292,7 +296,7 @@ void featGenerator::generateSyntacticalFeats(event &ei, event &ej, const list<pa
 	set<string> repetableFeats;
     list<paragraph::const_iterator>::const_iterator s;
     freeling::dep_tree::const_iterator p;
-    int spanS, spanF;
+    int posAct;
     bool found = false;
 
     word fword = *ei.w;
@@ -306,9 +310,8 @@ void featGenerator::generateSyntacticalFeats(event &ei, event &ej, const list<pa
     p=(*s)->get_dep_tree().begin();
     while  (p!=(*s)->get_dep_tree().end()) {
         word w = p->get_word();
-        spanS = w.get_span_start();
-        spanF = w.get_span_finish();
-        if((ei.start_offs == spanS) or (ei.start_offs >= spanS and ei.end_offs <= spanF)) {found = true; break;}
+        posAct = w.get_position();
+        if(posAct == ei.pos) {found = true; break;}
         ++p;
     }
     /*found = true;
@@ -350,9 +353,8 @@ void featGenerator::generateSyntacticalFeats(event &ei, event &ej, const list<pa
     p=(*s)->get_dep_tree().begin();
     while  (p!=(*s)->get_dep_tree().end()) {
         word w = p->get_word();
-        spanS = w.get_span_start();
-        spanF = w.get_span_finish();
-        if((ej.start_offs == spanS) or (ej.start_offs >= spanS and ej.end_offs <= spanF)) {found = true; break;}
+        posAct = w.get_position();
+        if(posAct == ej.pos) {found = true; break;}
         ++p;
     }
     /*found = true;
@@ -386,16 +388,34 @@ void featGenerator::generateSyntacticalFeats(event &ei, event &ej, const list<pa
     printFeatsSet(repetableFeats);
 }
 
-list<string> featGenerator::generateFeatures2String(event &ei, event &ej, const list<paragraph::const_iterator> &ls) {
-	list<string> features;
-//TODO: implement
+string featGenerator::generateFeatures2String(event &ei, event &ej, const list<paragraph::const_iterator> &ls) {
 
-	return features;
+	if(this->lexicalfeats) {
+        generateLexicalFeats(ei,ej,ls);
+    }
+    if(this->syntactfeats) {
+        generateSyntacticalFeats(ei, ej, ls);
+    }
+
+	return getCurrentFeatures();
 }
 
-list<pair<int,int>> featGenerator::codeFeatures(list<string> features, map<string,int> dic) {
+list<pair<int,int>> featGenerator::codeFeatures(list<string> &features, map<string,int> &dic) {
 	list<pair<int,int>> featuresCoded;
-//TODO: implement
+
+	for (auto feat : features) {
+		list<string> tags = split(feat, '=');
+		list<string>::iterator tag = tags.begin();
+		
+		if (dic.find(feat) != dic.end()) {
+			featuresCoded.push_back(make_pair(dic[feat],1));
+		}
+		else if (dic.find((*tag)) != dic.end()){
+			featuresCoded.push_back(make_pair(dic[(*tag)],stoi((*++tag))));
+		}
+
+	}
+	featuresCoded.sort();
 
 	return featuresCoded;
 }
@@ -403,6 +423,10 @@ list<pair<int,int>> featGenerator::codeFeatures(list<string> features, map<strin
 //gets
 list<event> featGenerator::getEvents() {
 	return this->events;
+}
+
+string featGenerator::getCurrentFeatures() {
+	return this->current_features;
 }
 
 list<std::pair<event,event>> featGenerator::getPairs() {
@@ -431,6 +455,11 @@ void featGenerator::setBooleans(bool lexicalfeats, bool syntactfeats) {
 	this->lexicalfeats = lexicalfeats;
 	this->syntactfeats = syntactfeats;
 }
+
+void featGenerator::resetCurrentFeatures() {
+	this->current_features = "";
+}
+
 
 
 //private functions
@@ -466,4 +495,22 @@ void featGenerator::printDateInfo(string dateInfo, string word) {
 }
 
 bool featGenerator::sortFunc(pair<string,int> first, pair<string,int> second) { return (first.second > second.second); }
+
+list<string> featGenerator::split(string s, char delim) {
+	list<string> ssplited;
+	
+	string part = "";
+	for (auto c : s) {
+		if(c == delim) {
+			ssplited.push_back(part);
+			part = "";
+		}
+		else{
+			part += c;
+		}
+	}
+	if (part != "")	ssplited.push_back(part);
+
+	return ssplited;
+}
 
