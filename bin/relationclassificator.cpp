@@ -102,7 +102,7 @@ relationclassificator::relationclassificator(const std::wstring &configFile)
 relationclassificator::~relationclassificator() {}
 
 //Extract features and classify them.
-void relationclassificator::predict(const freeling::document &doc) const {
+void relationclassificator::predict(const freeling::document &doc) {
 	featGenerator featGen(true, true);
 
 	vector<string> predictions;
@@ -120,14 +120,20 @@ void relationclassificator::predict(const freeling::document &doc) const {
 	list<std::pair<event,event>> pairs = featGen.getPairs();
 	for (auto pi : pairs)
 	{
-		cout << pi.first.id << "-" << pi.second.id << endl;
-		/*double *pred = new double[classif->get_nlabels()];
+		//cout << pi.first.id << "-" << pi.second.id << endl;
+		double *pred = new double[classif->get_nlabels()];
 		//create example to classify
 		example exmp(classif->get_nlabels());
 		//add features
-		list<string> features = featGen.generateFeatures2String(pi.first, pi.second, sents);
-		list<pair<int,int>> feautresCoded = featGen.codeFeatures(features, dic);
-		for (auto f : features) exmp.add_feature(f);
+		string features = featGen.generateFeatures2String(pi.first, pi.second, sents);
+		list<string> featuresList = relationclassificator::split(features, ' ');
+		//for (auto s : featuresList) cout << s << " ";
+		
+		list<pair<int,int>> feautresCoded = featGen.codeFeatures(featuresList, dic);
+		for (auto fc : feautresCoded) {
+			exmp.add_feature(fc.first,fc.second);
+		//	cout << fc.first << ":" << fc.second << " ";
+		}
 
 		//classify
 		classif->classify(exmp,pred);
@@ -142,21 +148,23 @@ void relationclassificator::predict(const freeling::document &doc) const {
 			}
 		}
 
-		predictions.push_back(tag);
-		examples.push_back(pi.first.id+"-"+pi.second.id);
-		*/
+		predictions.push_back(util::wstring2string(tag));
+		examples.push_back(pi.first.id+"-"+pi.second.id+" "+pi.first.word+" "+pi.second.word);
+		
+
+		featGen.resetCurrentFeatures();
 	}
 	
 	//read and print the results
 	for (int i = 0; i < examples.size(); ++i) {
-		cout << examples[i] << " have " << predictions[i] << endl;
+		cout << examples[i] << " : " << predictions[i] << endl;
 	}
 
 }
 
 //private:
-vector<string> relationclassificator::split(string s, char delim) {
-	vector<string> ssplited;
+list<string> relationclassificator::split(string s, char delim) {
+	list<string> ssplited;
 	
 	string part = "";
 	for (auto c : s) {
@@ -168,6 +176,7 @@ vector<string> relationclassificator::split(string s, char delim) {
 			part += c;
 		}
 	}
+	if (part != "")	ssplited.push_back(part);
 
 	return ssplited;
 }

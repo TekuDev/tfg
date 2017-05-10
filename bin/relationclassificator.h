@@ -28,10 +28,10 @@ class relationclassificator
 	~relationclassificator();
 
     /// predict from string
-    void predict(const freeling::document &doc) const;
+    void predict(const freeling::document &doc);
 
   private:
-  	vector<string> split(string s, char delim);
+  	list<string> split(string s, char delim);
 };
 
 

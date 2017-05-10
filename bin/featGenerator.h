@@ -17,6 +17,7 @@ public:
 	list< pair<string, string> > conexions;
 	bool lexicalfeats, syntactfeats;
 	ofstream out[2];
+	string current_features;
 
 
 	featGenerator();
@@ -41,21 +42,24 @@ public:
 	void generateFeatures(const list<paragraph::const_iterator> &ls);
 	void generateLexicalFeats(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
 	void generateSyntacticalFeats(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
-	list<string> generateFeatures2String(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
-	list<pair<int,int>> codeFeatures(list<string> features, map<string,int> dic);
+	string generateFeatures2String(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
+	list<pair<int,int>> codeFeatures(list<string> &features, map<string,int> &dic);
 
 	//gets
 	list<event> getEvents();
 	list<std::pair<event,event>> getPairs();
+	string getCurrentFeatures();
 
 	//sets
 	void setBooleans(bool lexicalfeats, bool syntactfeats);
+	void resetCurrentFeatures();
 
 private:
 	string trataNumeric(string f);
 	void printDateInfo(string dateInfo, string word);
 
 	static bool sortFunc(pair<string,int> first, pair<string,int> second);
+  	list<string> split(string s, char delim);
 };
 
 #endif
