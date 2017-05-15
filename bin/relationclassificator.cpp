@@ -116,6 +116,7 @@ void relationclassificator::predict(const freeling::document &doc) {
 	
 	//create events
 	featGen.createEvents(sents);
+
 	//make pairs
 	list<std::pair<event,event>> pairs = featGen.getPairs();
 	for (auto pi : pairs)
