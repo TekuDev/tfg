@@ -11,7 +11,7 @@ new = open(writeFile,'w')
 
 line = old.readline()
 while(line != ''):
-	if line.find("w1=t0") == -1:
+	if line.find("w1t0") == -1:
 		new.write(line)
 	line = old.readline()
 
