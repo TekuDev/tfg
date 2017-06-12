@@ -38,7 +38,7 @@ void featGenerator::createEvents(const list<paragraph::const_iterator> &ls)  {
 
 //wcout << w->get_form() << " with tag: " << w->get_tag() << endl;
 
-            if(tag[0] == 'V' || tag == "W") {
+            if(((*s)->is_predicate(w->get_position()) and tag[0] == 'V') or tag == "W") {
                 event *ev = new event(tag);
                 event e = *ev;
 
@@ -48,7 +48,7 @@ void featGenerator::createEvents(const list<paragraph::const_iterator> &ls)  {
                 if(tag[0] == 'V')
                 	e.id = "e"+to_string(i);
                	else
-               		e.id = "t"+to_string(i);
+               		e.id = "t"+to_string(i+1);
                 e.word = util::wstring2string(w->get_form());
 
                 addEvent(e);
@@ -441,7 +441,7 @@ list<std::pair<event,event>> featGenerator::getPairs() {
             string event = ei.id;
             string related = ej.id;
 
-        	if (event != related and i < j and (ei.id == "t0" or (ei.sen - ej.sen) == 1 or (ei.sen - ej.sen) == 0)){
+        	if (event != related and i < j /*and ei.id[0] != 't'*/ and ((ei.sen - ej.sen) == 1 or (ei.sen - ej.sen) == 0)){
                 pairs.push_back(make_pair(ei,ej));
         	}
         ++j;

@@ -14,6 +14,7 @@
 #include "event.h"
 #include "relationclassificator.h"
 #include "freeling/omlet/svm.h"
+#include "freeling/morfo/semgraph.h"
 
 using namespace std;
 using namespace freeling;
@@ -105,6 +106,8 @@ relationclassificator::~relationclassificator() {}
 void relationclassificator::predict(const freeling::document &doc) {
 	featGenerator featGen(true, true);
 
+	freeling::semgraph::semantic_graph semg = doc.get_semantic_graph();
+
 	vector<string> predictions;
 	vector<string> examples;
 
@@ -119,6 +122,7 @@ void relationclassificator::predict(const freeling::document &doc) {
 
 	//make pairs
 	list<std::pair<event,event>> pairs = featGen.getPairs();
+	int id = 0;
 	for (auto pi : pairs)
 	{
 		//cout << pi.first.id << "-" << pi.second.id << endl;
@@ -149,18 +153,41 @@ void relationclassificator::predict(const freeling::document &doc) {
 			}
 		}
 
-		predictions.push_back(util::wstring2string(tag));
-		examples.push_back(pi.first.id+"-"+pi.second.id+" "+pi.first.word+" "+pi.second.word);
-		
+		if(tag != L"NONE") {
+
+			wstring rtid = L"RT"+string2wstring(std::to_string(id));
+			wstring classrel = tag;
+			wstring id1 = string2wstring(pi.first.id)+L" "+string2wstring(pi.first.word);
+			wstring id2 = string2wstring(pi.second.id)+L" "+string2wstring(pi.second.word);
+			wstring t1 = id1[0] == 'e' ? L"EVENT" : L"TIMEEXPRESION";
+			wstring t2 = id2[0] == 'e' ? L"EVENT" : L"TIMEEXPRESION";
+
+			freeling::semgraph::SG_relation_tmp rt(rtid, tag, id1, id2, t1, t2);
+			semg.add_relTemp(rt);
+
+			//predictions.push_back(util::wstring2string(tag));
+			//examples.push_back(pi.first.id+"-"+pi.second.id+" "+pi.first.word+" "+pi.second.word);
+
+			++id;
+		}
 
 		featGen.resetCurrentFeatures();
 	}
 	
 	//read and print the results
-	for (int i = 0; i < examples.size(); ++i) {
+	/*for (int i = 0; i < examples.size(); ++i) {
 		cout << examples[i] << " : " << predictions[i] << endl;
-	}
+	}*/
 
+	vector<freeling::semgraph::SG_relation_tmp> relations = semg.get_relations();
+	for (auto r : relations) {
+		wcout << L"RelTemp Id: " << r.get_id();
+		wcout << L" W1: " << r.get_w1();
+		wcout << L" Type1: " << r.get_t1();
+		wcout << L" W2: " << r.get_w2();
+		wcout << L" Type2: " << r.get_t2();
+		wcout << L" Relation: " << r.get_rel() << endl; 
+	}
 }
 
 //private:
@@ -180,4 +207,10 @@ list<string> relationclassificator::split(string s, char delim) {
 	if (part != "")	ssplited.push_back(part);
 
 	return ssplited;
+}
+
+wstring relationclassificator::string2wstring(string s){
+	wstring ws(s.begin(), s.end());
+
+	return ws;
 }

@@ -32,6 +32,7 @@ class relationclassificator
 
   private:
   	list<string> split(string s, char delim);
+  	wstring string2wstring(string s);
 };
 
 

@@ -214,6 +214,14 @@ bool findConexion(string ei, string ej) {
     return false;
 }
 
+void swapClass(string &clas) {
+    if(clas == "IS_INCLUDED") clas = "INCLUDES";
+    else if(clas == "INCLUDES") clas = "IS_INCLUDED";
+    else if(clas == "AFTER") clas = "BEFORE";
+    else if(clas == "BEFORE") clas = "AFTER";
+    //else se mantiene.
+}
+
 void generateSyntacticalFeats(event &ei, event &ej, list<sentence> &ls) {
     set<string> repetableFeats;
     list<freeling::sentence>::const_iterator s;
@@ -516,6 +524,13 @@ int descard = 0;
         et = findEventInEvents(ei);
     	ed = findEventInEvents(ej);
     	
+        if (et.sen > ed.sen or (et.sen == ed.sen and et.pos > ed.pos)){
+
+            et = findEventInEvents(ej);
+            ed = findEventInEvents(ei);
+            swapClass(clas);
+        }
+
     	if(et.sen != -1 and et.pos != -1 and ed.sen != -1 and ed.pos != -1) {
     		printClass(clas);
 	    	//Features from Freeling:
