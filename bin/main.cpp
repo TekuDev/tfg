@@ -185,7 +185,7 @@ int main(int nArgs, char* args[]) {
     //ox.PrintSemgraph(wos,doc);
     ox->PrintResults(wos,doc);
 
-    delete ox;
+    //delete ox;
 
     cout << "Done" << endl;
 }

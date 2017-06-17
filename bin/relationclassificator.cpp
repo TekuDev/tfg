@@ -223,20 +223,37 @@ wstring relationclassificator::getFrameId(freeling::semgraph::semantic_graph &se
 	vector<freeling::semgraph::SG_frame> frames = semg.get_frames();
 
 	wstring id;
-cout << "Frame word: " << e.word;
-cout << "   t" << e.sen+1 << '.' << e.pos+1 << endl;
 
 	for (auto f : frames) {
-		if(f.get_token_id() == L't'+util::string2wstring(e.sen+1)+L'.'+util::string2wstring(e.pos+1)) return f.get_id();
+		if(f.get_sentence_id() == util::string2wstring(e.sen+1) and f.get_token_id() == util::string2wstring(e.pos+1)) return f.get_id();
 	}
 
-	freeling::semgraph::SG_frame fnew(e.w->get_lemma(), e.w->get_senses().begin()->first, L't'+util::string2wstring(e.sen+1)+L'.'+util::string2wstring(e.pos+1), util::string2wstring(e.sen));
+	freeling::semgraph::SG_frame fnew(e.w->get_lemma(), e.w->get_senses().begin()->first, util::string2wstring(e.pos+1), util::string2wstring(e.sen));
 	semg.add_frame(fnew);
-cout << "newFrame" << endl;
 
 	return fnew.get_id();
 }
 
 wstring relationclassificator::getEntityId(freeling::semgraph::semantic_graph &semg, const event &e) const {
-	return L"ola k ase";
+	vector<freeling::semgraph::SG_entity> entities = semg.get_entities();
+
+	wstring id;
+
+	for (auto ent : entities) {
+		vector<freeling::semgraph::SG_mention> mentions = ent.get_mentions();
+
+		for (auto m : mentions) {
+			if(m.get_sentence_id() == util::string2wstring(e.sen+1) and m.get_id() == util::string2wstring(e.pos+1)) return ent.get_id();
+		}
+	}
+
+	freeling::semgraph::SG_entity enew(e.w->get_lemma(), L"TIMEEXPRESION", freeling::semgraph::entityType::WORD, e.w->get_senses().begin()->first);
+	list<wstring> words; words.push_back(util::string2wstring(e.word));
+	freeling::semgraph::SG_mention mnew(util::string2wstring(e.pos+1), util::string2wstring(e.sen+1), words);
+
+	//enew.add_mention(mnew);
+	semg.add_entity(enew);
+
+	return enew.get_id();
+
 }
