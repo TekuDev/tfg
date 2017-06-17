@@ -17,13 +17,13 @@ LIBS=-lfreeling -lboost_system
 all:	featuresGenerator generateFeaturesFromTxt main
 
 featuresGenerator: featuresGenerator.cpp
-	g++ -std=c++11 -o featuresGenerator featuresGenerator.cpp ../pugixml-1.7/src/pugixml.hpp ../pugixml-1.7/src/pugixml.cpp featGenerator.h event.h $(PATHS) $(LIBS)
+	g++ -Wall -std=c++11 -o featuresGenerator featuresGenerator.cpp ../pugixml-1.7/src/pugixml.hpp ../pugixml-1.7/src/pugixml.cpp featGenerator.h event.h $(PATHS) $(LIBS)
 
 generateFeaturesFromTxt: generateFeaturesFromTxt.cpp
-	g++ -std=c++11 -o generateFeaturesFromTxt generateFeaturesFromTxt.cpp featGenerator.h event.h $(PATHS) $(LIBS)
+	g++ -Wall -std=c++11 -o generateFeaturesFromTxt generateFeaturesFromTxt.cpp featGenerator.h event.h $(PATHS) $(LIBS)
 
 main: main.cpp featGenerator.h featGenerator.cpp event.h relationclassificator.h relationclassificator.cpp 
-	g++ -std=c++11 -o main main.cpp featGenerator.h featGenerator.cpp event.h relationclassificator.h relationclassificator.cpp $(PATHS) $(LIBS)
+	g++ -Wall -std=c++11 -o main main.cpp featGenerator.h featGenerator.cpp event.h relationclassificator.h relationclassificator.cpp $(PATHS) $(LIBS)
 
 clean:
 	rm -f featuresGenerator generateFeaturesFromTxt main

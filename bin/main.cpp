@@ -10,6 +10,7 @@
 #include "event.h"
 #include "featGenerator.h"
 #include "relationclassificator.h"
+#include "freeling/output/output_xml.h"
 using namespace std;
 using namespace freeling;
 
@@ -132,7 +133,6 @@ int main(int nArgs, char* args[]) {
 
     tokenizer tk(path+L"tokenizer.dat"); 
     splitter sp(path+L"splitter.dat");
-    splitter::session_id sid=sp.open_session();
     maco_options opt(L"en");
 
     opt.UserMapFile=L"";
@@ -157,26 +157,35 @@ int main(int nArgs, char* args[]) {
     senses sen(path+L"senses.dat");
     ukb wsd(path+L"ukb.dat");
     dep_treeler parser(path+L"dep_treeler/dependences.dat");
+    semgraph_extract semg(path+L"semgraph/semgraph-SRL.dat");
 
     list<freeling::word> lw; 
     list<sentence> ls;
 
     lw=tk.tokenize(wtext);
-    ls=sp.split(sid, lw, true);
+    ls=sp.split(lw);
     morfo.analyze(ls);
     tagger.analyze(ls);
     sen.analyze(ls);
     wsd.analyze(ls);
     parser.analyze(ls);
 
+
     cout << "creamos el documento" << endl;
 
     document doc;
     doc.insert(doc.end(),ls);
 
+    semg.extract(doc);
+
     relClass->predict(doc);
 
-    sp.close_session(sid);
+    freeling::io::output_xml *ox = new freeling::io::output_xml();
+    std::wofstream wos("../outputs/sem_graph.xml", std::ios::out);
+    //ox.PrintSemgraph(wos,doc);
+    ox->PrintResults(wos,doc);
+
+    delete ox;
 
     cout << "Done" << endl;
 }

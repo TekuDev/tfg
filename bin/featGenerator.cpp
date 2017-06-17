@@ -52,6 +52,7 @@ void featGenerator::createEvents(const list<paragraph::const_iterator> &ls)  {
                 e.word = util::wstring2string(w->get_form());
 
                 addEvent(e);
+                delete ev;
                 ++i;
             }
             ++w;
@@ -403,18 +404,22 @@ string featGenerator::generateFeatures2String(event &ei, event &ej, const list<p
 	return getCurrentFeatures();
 }
 
-list<pair<int,int>> featGenerator::codeFeatures(list<string> &features, map<string,int> &dic) {
+list<pair<int,int>> featGenerator::codeFeatures(list<string> &features, const map<string,int> &dic)  const {
 	list<pair<int,int>> featuresCoded;
 
 	for (auto feat : features) {
 		list<string> tags = split(feat, '=');
 		list<string>::iterator tag = tags.begin();
 		
-		if (dic.find(feat) != dic.end()) {
-			featuresCoded.push_back(make_pair(dic[feat],1));
+		map<string,int>::const_iterator p=dic.find(feat);
+		if (p != dic.end()) {
+			featuresCoded.push_back(make_pair(p->second,1));
 		}
-		else if (dic.find((*tag)) != dic.end()){
-			featuresCoded.push_back(make_pair(dic[(*tag)],stoi((*++tag))));
+		else{
+			p=dic.find((*tag));
+		 	if (p != dic.end()){
+				featuresCoded.push_back(make_pair(p->second,stoi((*++tag))));
+			}
 		}
 
 	}
@@ -498,7 +503,7 @@ void featGenerator::printDateInfo(string dateInfo, string word) {
 
 bool featGenerator::sortFunc(pair<string,int> first, pair<string,int> second) { return (first.second > second.second); }
 
-list<string> featGenerator::split(string s, char delim) {
+list<string> featGenerator::split(string s, char delim) const {
 	list<string> ssplited;
 	
 	string part = "";

@@ -28,11 +28,13 @@ class relationclassificator
 	~relationclassificator();
 
     /// predict from string
-    void predict(const freeling::document &doc);
+    void predict(freeling::document &doc) const;
 
   private:
-  	list<string> split(string s, char delim);
-  	wstring string2wstring(string s);
+  	list<string> split(string s, char delim) const;
+  	void addRelTemp2SemGraph(freeling::semgraph::semantic_graph &semg, wstring &relid, const event &e1, const event &e2, wstring &t1, wstring &t2, wstring &rel) const;
+  	wstring getFrameId(freeling::semgraph::semantic_graph &semg, const event &e) const;
+  	wstring getEntityId(freeling::semgraph::semantic_graph &semg, const event &e) const;
 };
 
 

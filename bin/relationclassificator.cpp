@@ -103,13 +103,10 @@ relationclassificator::relationclassificator(const std::wstring &configFile)
 relationclassificator::~relationclassificator() {}
 
 //Extract features and classify them.
-void relationclassificator::predict(const freeling::document &doc) {
+void relationclassificator::predict(freeling::document &doc) const {
 	featGenerator featGen(true, true);
 
-	freeling::semgraph::semantic_graph semg = doc.get_semantic_graph();
-
-	vector<string> predictions;
-	vector<string> examples;
+	freeling::semgraph::semantic_graph &semg = doc.get_semantic_graph();
 
 	//for (paragraf)
 	list<paragraph::const_iterator> sents;
@@ -155,29 +152,21 @@ void relationclassificator::predict(const freeling::document &doc) {
 
 		if(tag != L"NONE") {
 
-			wstring rtid = L"RT"+string2wstring(std::to_string(id));
+			wstring rtid = L"RT"+util::string2wstring(std::to_string(id));
 			wstring classrel = tag;
-			wstring id1 = string2wstring(pi.first.id)+L" "+string2wstring(pi.first.word);
-			wstring id2 = string2wstring(pi.second.id)+L" "+string2wstring(pi.second.word);
+			wstring id1 = util::string2wstring(pi.first.id)+L" "+util::string2wstring(pi.first.word);
+			wstring id2 = util::string2wstring(pi.second.id)+L" "+util::string2wstring(pi.second.word);
 			wstring t1 = id1[0] == 'e' ? L"EVENT" : L"TIMEEXPRESION";
 			wstring t2 = id2[0] == 'e' ? L"EVENT" : L"TIMEEXPRESION";
 
-			freeling::semgraph::SG_relation_tmp rt(rtid, tag, id1, id2, t1, t2);
-			semg.add_relTemp(rt);
-
-			//predictions.push_back(util::wstring2string(tag));
-			//examples.push_back(pi.first.id+"-"+pi.second.id+" "+pi.first.word+" "+pi.second.word);
+			addRelTemp2SemGraph(semg, rtid, pi.first, pi.second, t1, t2, classrel);
 
 			++id;
 		}
 
+		delete pred;
 		featGen.resetCurrentFeatures();
 	}
-	
-	//read and print the results
-	/*for (int i = 0; i < examples.size(); ++i) {
-		cout << examples[i] << " : " << predictions[i] << endl;
-	}*/
 
 	vector<freeling::semgraph::SG_relation_tmp> relations = semg.get_relations();
 	for (auto r : relations) {
@@ -191,7 +180,7 @@ void relationclassificator::predict(const freeling::document &doc) {
 }
 
 //private:
-list<string> relationclassificator::split(string s, char delim) {
+list<string> relationclassificator::split(string s, char delim) const {
 	list<string> ssplited;
 	
 	string part = "";
@@ -209,8 +198,45 @@ list<string> relationclassificator::split(string s, char delim) {
 	return ssplited;
 }
 
-wstring relationclassificator::string2wstring(string s){
-	wstring ws(s.begin(), s.end());
+void relationclassificator::addRelTemp2SemGraph(freeling::semgraph::semantic_graph &semg, wstring &relid, const event &e1, const event &e2, wstring &t1, wstring &t2, wstring &rel) const {
+	wstring id1,id2;
 
-	return ws;
+	if(t1 == L"EVENT") {
+		id1 = getFrameId(semg, e1);
+	}
+	else {
+		id1 = getEntityId(semg, e1);
+	}
+
+	if(t2 == L"EVENT") {
+		id2 = getFrameId(semg, e2);
+	}
+	else {
+		id2 = getEntityId(semg, e2);
+	}
+
+	freeling::semgraph::SG_relation_tmp rt(relid, rel, id1, id2, t1, t2);
+	semg.add_relTemp(rt);
+}
+
+wstring relationclassificator::getFrameId(freeling::semgraph::semantic_graph &semg, const event &e) const {
+	vector<freeling::semgraph::SG_frame> frames = semg.get_frames();
+
+	wstring id;
+cout << "Frame word: " << e.word;
+cout << "   t" << e.sen+1 << '.' << e.pos+1 << endl;
+
+	for (auto f : frames) {
+		if(f.get_token_id() == L't'+util::string2wstring(e.sen+1)+L'.'+util::string2wstring(e.pos+1)) return f.get_id();
+	}
+
+	freeling::semgraph::SG_frame fnew(e.w->get_lemma(), e.w->get_senses().begin()->first, L't'+util::string2wstring(e.sen+1)+L'.'+util::string2wstring(e.pos+1), util::string2wstring(e.sen));
+	semg.add_frame(fnew);
+cout << "newFrame" << endl;
+
+	return fnew.get_id();
+}
+
+wstring relationclassificator::getEntityId(freeling::semgraph::semantic_graph &semg, const event &e) const {
+	return L"ola k ase";
 }

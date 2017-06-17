@@ -43,7 +43,7 @@ public:
 	void generateLexicalFeats(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
 	void generateSyntacticalFeats(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
 	string generateFeatures2String(event &ei, event &ej, const list<paragraph::const_iterator> &ls);
-	list<pair<int,int>> codeFeatures(list<string> &features, map<string,int> &dic);
+	list<pair<int,int>> codeFeatures(list<string> &features, const map<string,int> &dic) const;
 
 	//gets
 	list<event> getEvents();
@@ -59,7 +59,7 @@ private:
 	void printDateInfo(string dateInfo, string word);
 
 	static bool sortFunc(pair<string,int> first, pair<string,int> second);
-  	list<string> split(string s, char delim);
+  	list<string> split(string s, char delim) const;
 };
 
 #endif
